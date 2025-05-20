@@ -9,6 +9,7 @@ public class MoneyManager : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI MoneyUI;
 
+
     public int currency;
 
 
@@ -20,10 +21,10 @@ public class MoneyManager : MonoBehaviour
             currency = value; // Update the internal health value
             MoneyUI.text = currency.ToString(); // Update the health UI text
 
-            if (currency < 0)
+            /*if (currency < 0)
             {
                 SceneManager.LoadScene("lose");
-            }
+            }*/
         }
     }
 
@@ -52,6 +53,14 @@ public class MoneyManager : MonoBehaviour
         {
             return false;
         }
+
+    }
+    private void Update()
+    {
+        MoneyUI.text = currency.ToString();
+    }
+    public void currentAmount()
+    {
 
     }
 }
