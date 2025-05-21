@@ -6,7 +6,7 @@ public class pickup : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        
+       
     }
 }
     
