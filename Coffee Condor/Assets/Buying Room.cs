@@ -8,10 +8,8 @@ public class BuyingRooms : MonoBehaviour
     [Header("References")]
     [SerializeField] private SpriteRenderer sr;
     [SerializeField] private Color hoverColor;
-    [SerializeField] GameObject UnlockNext1;
-    [SerializeField] GameObject UnlockNext2;
-    [SerializeField] GameObject UnlockNext3;
-    [SerializeField] GameObject UnlockNext4;
+    [SerializeField] private GameObject[] roomsToUnlock;
+
     private Color startColor;
 
     private void Start()
@@ -20,16 +18,15 @@ public class BuyingRooms : MonoBehaviour
 
         if (Locked)
         {
-            sr.color = Color.gray; // Optional
+            sr.color = Color.gray;
             GetComponent<Collider2D>().enabled = false;
         }
     }
 
-
     private void OnMouseEnter()
     {
-        if (Locked) return;
-        sr.color = hoverColor;
+        if (!Locked)
+            sr.color = hoverColor;
     }
 
     private void OnMouseExit()
@@ -39,32 +36,32 @@ public class BuyingRooms : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (MoneyManager.main.Currency >= cost && !Locked)
-        {
-            MoneyManager.main.SpendCurrency(cost);
+        if (Locked || MoneyManager.main.Currency < cost)
+            return;
 
-            UnlockRoom(UnlockNext1);
-            UnlockRoom(UnlockNext2);
-            UnlockRoom(UnlockNext3);
-            UnlockRoom(UnlockNext4);
-            Destroy(gameObject); // Now it destroys itself after unlocking
+        MoneyManager.main.SpendCurrency(cost);
+
+        foreach (var room in roomsToUnlock)
+        {
+            UnlockRoom(room);
         }
+
+        Destroy(gameObject);
     }
 
-
-    private void UnlockRoom(GameObject roomToUnlock)
+    private void UnlockRoom(GameObject room)
     {
-        if (roomToUnlock == null) return;
+        if (room == null) return;
 
-        BuyingRooms br = roomToUnlock.GetComponent<BuyingRooms>();
-        if (br != null)
+        if (room.TryGetComponent(out BuyingRooms br))
         {
             br.Locked = false;
-            br.sr.color = br.startColor; // Restore original color
+            br.sr.color = br.startColor;
         }
 
-        Collider2D col = roomToUnlock.GetComponent<Collider2D>();
-        if (col != null) col.enabled = true;
+        if (room.TryGetComponent(out Collider2D col))
+        {
+            col.enabled = true;
+        }
     }
-
 }

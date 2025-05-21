@@ -1,30 +1,24 @@
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class MoneyManager : MonoBehaviour
 {
     public static MoneyManager main;
 
-    [SerializeField] TextMeshProUGUI MoneyUI;
+    [SerializeField] private TextMeshProUGUI moneyText;
+    public Transform SpawnPoint;
+    public Transform[] OrderPoint;
+    public Transform[] EatPoint;
+    public Transform LeavePoint;
 
-
-    public int currency;
-
-
+    private int currency;
     public int Currency
     {
         get => currency;
         set
         {
-            currency = value; // Update the internal health value
-            MoneyUI.text = currency.ToString(); // Update the health UI text
-
-            /*if (currency < 0)
-            {
-                SceneManager.LoadScene("lose");
-            }*/
+            currency = Mathf.Max(0, value); // Prevent negative currency
+            moneyText.text = currency.ToString();
         }
     }
 
@@ -32,35 +26,24 @@ public class MoneyManager : MonoBehaviour
     {
         main = this;
     }
+
     private void Start()
     {
-        currency = 100;
-        MoneyUI.text = currency.ToString();
+        Currency = 100; // Use property to set value and update UI
     }
+
     public void IncreaseCurrency(int amount)
     {
-        currency += amount;
+        Currency += amount;
     }
+
     public bool SpendCurrency(int amount)
     {
         if (amount <= currency)
         {
-            // buy item
-            currency -= amount;
+            Currency -= amount;
             return true;
         }
-        else
-        {
-            return false;
-        }
-
-    }
-    private void Update()
-    {
-        MoneyUI.text = currency.ToString();
-    }
-    public void currentAmount()
-    {
-
+        return false;
     }
 }
