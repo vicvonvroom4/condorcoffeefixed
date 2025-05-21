@@ -12,6 +12,7 @@ public class MoneyManager : MonoBehaviour
     public Transform LeavePoint;
 
     private int currency;
+
     public int Currency
     {
         get => currency;
@@ -21,8 +22,7 @@ public class MoneyManager : MonoBehaviour
             moneyText.text = currency.ToString();
         }
     }
-
-    private void Awake()
+    void Awake()
     {
         main = this;
     }
