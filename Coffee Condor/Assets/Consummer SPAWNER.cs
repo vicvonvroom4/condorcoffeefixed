@@ -17,18 +17,16 @@ public class ConsummerSPAWNER : MonoBehaviour
 
     IEnumerator SpawnLoop()
     {
-        while (true)
+        while (spawnCount < maxSpawnCount)
         {
-            if (spawnCount < maxSpawnCount - 1)
-            {
-                spawnCount++;
-                SpawnConsumer();
-                float waitTime = Random.Range(5f, 10f);
-                yield return new WaitForSeconds(waitTime);
-                Debug.Log(spawnCount);
-            }
+            spawnCount++;
+            SpawnConsumer();
+            float waitTime = Random.Range(5f, 10f);
+            yield return new WaitForSeconds(waitTime);
+            Debug.Log(spawnCount);
         }
     }
+
     void FindMaxSpawnCount()
     {
         maxSpawnCount = Random.Range(20, 31); // 31 is exclusive, so this gives a value between 20 and 30
