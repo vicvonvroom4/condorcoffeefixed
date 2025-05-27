@@ -1,18 +1,33 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DAYTime : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public GameObject resultCanvas; // Assign in Inspector
+    public ConsummerSPAWNER spawner; // Reference to the spawner script
+
+    public void StartDayEndSequence()
     {
-        
+        StartCoroutine(EndDayRoutine());
     }
 
-    // Update is called once per frame
-    void Update()
+    private IEnumerator EndDayRoutine()
     {
-        
+        Debug.Log("Day ending. Waiting 30 seconds...");
+        yield return new WaitForSeconds(30f);
+
+        // Show results canvas
+        if (resultCanvas != null)
+        {
+            resultCanvas.SetActive(true);
+        }
+
+        // Reset the spawner
+        if (spawner != null)
+        {
+            spawner.ResetSpawner();
+        }
+
+        Debug.Log("Day reset.");
     }
 }

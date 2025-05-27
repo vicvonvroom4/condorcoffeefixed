@@ -3,33 +3,57 @@ using UnityEngine;
 
 public class ConsummerSPAWNER : MonoBehaviour
 {
-    public GameObject consumerPrefab; // The asset to spawn
-    public Transform spawnPoint;      // The location to spawn at
+    public GameObject consumerPrefab;
+    public Transform spawnPoint;
     public int spawnCount = 0;
     public int maxSpawnCount = 0;
+    public DAYTime dayTimeManager; // Assign in Inspector
+    public bool DAY = true;
     private void Start()
     {
-        FindMaxSpawnCount(); // Set maxSpawnCount randomly
+        FindMaxSpawnCount();
         StartCoroutine(SpawnLoop());
     }
-
-
-
+    private void FixedUpdate()
+    {
+        if (spawnCount < maxSpawnCount)
+        {
+            DAY = false;
+        }
+    }
     IEnumerator SpawnLoop()
     {
-        while (spawnCount < maxSpawnCount)
+        while (spawnCount < maxSpawnCount && DAY)
         {
             spawnCount++;
             SpawnConsumer();
             float waitTime = Random.Range(5f, 10f);
             yield return new WaitForSeconds(waitTime);
-            Debug.Log(spawnCount);
+            Debug.Log("Spawned consumer: " + spawnCount);
+        }
+
+        // Spawn limit reached
+        if (dayTimeManager != null)
+        {
+            dayTimeManager.StartDayEndSequence();
+        }
+    }
+
+    public void ResetSpawner()
+    {
+        spawnCount = 0;
+        FindMaxSpawnCount();
+
+        if (gameObject.activeInHierarchy)
+        {
+            StartCoroutine(SpawnLoop());
         }
     }
 
     void FindMaxSpawnCount()
     {
-        maxSpawnCount = Random.Range(20, 31); // 31 is exclusive, so this gives a value between 20 and 30
+        maxSpawnCount = Random.Range(20, 31);
+        Debug.Log("New max spawn count: " + maxSpawnCount);
     }
 
     void SpawnConsumer()
