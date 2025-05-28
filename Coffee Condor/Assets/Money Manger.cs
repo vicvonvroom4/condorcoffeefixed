@@ -46,4 +46,17 @@ public class MoneyManager : MonoBehaviour
         }
         return false;
     }
+    public bool HasFreeOrderPoints()
+    {
+        foreach (Transform point in OrderPoint)
+        {
+            ConsumerPoint ap = point.GetComponent<ConsumerPoint>();
+            if (ap != null && !ap.IsOccupied)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

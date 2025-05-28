@@ -16,7 +16,7 @@ public class ConsummerSPAWNER : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (spawnCount < maxSpawnCount)
+        if (spawnCount > maxSpawnCount)
         {
             DAY = false;
         }
@@ -25,19 +25,26 @@ public class ConsummerSPAWNER : MonoBehaviour
     {
         while (spawnCount < maxSpawnCount && DAY)
         {
-            spawnCount++;
+            // Wait until an order point is free before spawning
+            while (!MoneyManager.main.HasFreeOrderPoints())
+            {
+                yield return new WaitForSeconds(1f); // Wait and retry
+            }
+
             SpawnConsumer();
+            spawnCount++;
+            Debug.Log("Spawned consumer: " + spawnCount);
             float waitTime = Random.Range(5f, 10f);
             yield return new WaitForSeconds(waitTime);
-            Debug.Log("Spawned consumer: " + spawnCount);
         }
 
-        // Spawn limit reached
         if (dayTimeManager != null)
         {
             dayTimeManager.StartDayEndSequence();
         }
     }
+
+
 
     public void ResetSpawner()
     {

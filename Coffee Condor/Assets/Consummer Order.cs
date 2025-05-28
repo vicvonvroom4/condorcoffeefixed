@@ -1,19 +1,24 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ConsumerOrder : MonoBehaviour
 {
     private int maxNumber = 1000000;
     public int numberOfSections = 4;
-    void Start()
+    public bool gotOrder = false;
+
+    public IEnumerator WaitForOrder()
     {
+        yield return new WaitForSeconds(2f); // simulate delay or player input
         RNG();
+        gotOrder = true;
     }
+
     public int GetRandomNumber()
     {
         return Random.Range(1, maxNumber + 1);
     }
+
     public void RNG()
     {
         if (numberOfSections <= 0 || maxNumber < 1)
