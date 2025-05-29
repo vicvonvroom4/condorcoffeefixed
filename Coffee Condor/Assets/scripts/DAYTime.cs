@@ -28,6 +28,8 @@ public class DAYTime : MonoBehaviour
             spawner.ResetSpawner();
         }
 
+        ConsumerOrder.ResetSectionStats();
+
         Debug.Log("Day reset.");
     }
 }
