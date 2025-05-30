@@ -76,14 +76,16 @@ public class ConsummerMovemnet : MonoBehaviour
         }
 
         // Move to order point and trigger RNG after arrival
-        yield return MoveToTarget(orderTarget, callRNG: true);
+        yield return MoveToTarget(orderTarget);
+
+        // Start the ordering coroutine
+        StartCoroutine(orderComponent.WaitForOrder());
 
         // Wait until order is received
         while (!orderComponent.gotOrder)
         {
             yield return null;
         }
-
 
         // Move to eat point
         yield return MoveToTarget(eatTarget);
@@ -97,6 +99,7 @@ public class ConsummerMovemnet : MonoBehaviour
         // Self-destruct
         Destroy(gameObject);
     }
+
 
     IEnumerator MoveToTarget(Transform target, bool callRNG = false)
     {
@@ -128,7 +131,7 @@ public class ConsummerMovemnet : MonoBehaviour
         // Trigger RNG here if needed
         if (callRNG && orderComponent != null)
         {
-            orderComponent.RNG();
+            orderComponent.BalancedRNG();
         }
     }
 
