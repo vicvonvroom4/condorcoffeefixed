@@ -15,7 +15,9 @@ public class ConsumerOrder : MonoBehaviour
     private static int[] sectionCounts;
     private static int lastPicked = -1;
     private static int streakCount = 0;
-
+    public bool orderProcessed = false;
+    public bool acceptingOrder = false;
+    public bool eating = false;
     private void Awake()
     {
         if (sectionCounts == null || sectionCounts.Length != numberOfSections)
@@ -25,18 +27,22 @@ public class ConsumerOrder : MonoBehaviour
     }
     public void Update()
     {
-        if (gotOrder)
+        if (acceptingOrder && gotOrder && !orderProcessed)
         {
-           CompleteOrder();
+            CompleteOrder();
+            orderProcessed = true;
         }
     }
+
     public IEnumerator WaitForOrder()
     {
         yield return new WaitForSeconds(2f);
-        int selectedSection = BalancedRNG();
 
+        int selectedSection = BalancedRNG();
         SpawnSectionVisual(selectedSection);
+        acceptingOrder = true;
     }
+
 
     void SpawnSectionVisual(int section)
     {
@@ -149,11 +155,19 @@ public class ConsumerOrder : MonoBehaviour
     public void CompleteOrder()
     {
         gotOrder = true;
+        eating = true;
+        // Award money when the order is completed
+        if (MoneyManager.main != null)
+        {
+            MoneyManager.main.IncreaseCurrency(100);
+        }
 
+        // Destroy or disable the section visual
         if (activeSectionVisual != null)
         {
-            Destroy(activeSectionVisual); // or activeSectionVisual.SetActive(false);
+            Destroy(activeSectionVisual);
         }
     }
+
 
 }

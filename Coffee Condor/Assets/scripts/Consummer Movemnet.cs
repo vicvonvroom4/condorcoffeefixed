@@ -82,7 +82,7 @@ public class ConsummerMovemnet : MonoBehaviour
         StartCoroutine(orderComponent.WaitForOrder());
 
         // Wait until order is received
-        while (!orderComponent.gotOrder)
+        while (!orderComponent.eating)
         {
             yield return null;
         }

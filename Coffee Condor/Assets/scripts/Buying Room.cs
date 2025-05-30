@@ -1,67 +1,111 @@
 using UnityEngine;
 
-public class BuyingRooms : MonoBehaviour
+public class BuyingRoom : MonoBehaviour
 {
     public int cost = 10;
-    public bool Locked = false;
+    public bool Locked = true;
 
-    [Header("References")]
     [SerializeField] private SpriteRenderer sr;
-    [SerializeField] private Color hoverColor;
-    [SerializeField] private GameObject[] roomsToUnlock;
+    [SerializeField] private Color lockedColor = Color.gray;
+    [SerializeField] private Color unlockedColor = Color.green;
+    [SerializeField] private Color hoverColor = Color.cyan;
 
-    private Color startColor;
+    private Color originalColor;
+    private RoomGridManager manager;
+    private int gridX, gridY;
+    private bool purchased = false;
 
     private void Start()
     {
-        startColor = sr.color;
-
-        if (Locked)
+        if (sr == null)
         {
-            sr.color = Color.gray;
-            GetComponent<Collider2D>().enabled = false;
+            sr = GetComponent<SpriteRenderer>();
         }
+
+        originalColor = sr.color;
+        UpdateVisual();
+    }
+
+    public void Initialize(int x, int y, RoomGridManager manager, int baseCost)
+    {
+        this.gridX = x;
+        this.gridY = y;
+        this.manager = manager;
+        this.cost = baseCost;
+
+        sr = GetComponent<SpriteRenderer>(); // Safety check
+        originalColor = sr.color;
+
+        // Only first column starts unlocked
+        if (x == 0)
+            Unlock();
+        else
+            Lock();
     }
 
     private void OnMouseEnter()
     {
-        if (!Locked)
+        if (!Locked && !purchased)
             sr.color = hoverColor;
     }
 
     private void OnMouseExit()
     {
-        sr.color = startColor;
+        if (!Locked && !purchased)
+            sr.color = Color.white;
     }
 
     private void OnMouseDown()
     {
-        if (Locked || MoneyManager.main.Currency < cost)
+        if (Locked || MoneyManager.main.Currency < cost || purchased)
             return;
 
         MoneyManager.main.SpendCurrency(cost);
+        purchased = true;
 
-        foreach (var room in roomsToUnlock)
-        {
-            UnlockRoom(room);
-        }
+        sr.color = Color.green;
+        GetComponent<Collider2D>().enabled = false;
 
-        Destroy(gameObject);
+        // Unlock adjacent rooms
+        manager.UnlockAdjacentRooms(gridX, gridY);
+
+        // Do NOT destroy the room — we want to keep it visible and green
+        // Destroy(gameObject);  remove this line
     }
 
-    private void UnlockRoom(GameObject room)
+
+
+    public void Unlock()
     {
-        if (room == null) return;
+        Locked = false;
+        GetComponent<Collider2D>().enabled = true;
+        UpdateVisual();
+    }
 
-        if (room.TryGetComponent(out BuyingRooms br))
+    public void Lock()
+    {
+        Locked = true;
+        GetComponent<Collider2D>().enabled = false;
+        UpdateVisual();
+    }
+    public void UpdateVisual()
+    {
+        if (Locked)
         {
-            br.Locked = false;
-            br.sr.color = br.startColor;
+            sr.color = Color.gray;
+            GetComponent<Collider2D>().enabled = false;
         }
-
-        if (room.TryGetComponent(out Collider2D col))
+        else if (purchased)
         {
-            col.enabled = true;
+            sr.color = Color.green;
+            GetComponent<Collider2D>().enabled = false;
+        }
+        else
+        {
+            sr.color = Color.white;
+            GetComponent<Collider2D>().enabled = true;
         }
     }
+
+
 }
